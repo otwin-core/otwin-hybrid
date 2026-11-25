@@ -1,41 +1,26 @@
 <div align="center">
 
-# Hybrid Digital Twin for Li-ion Batteries: Predict when a battery reaches end of life
+<img src="https://raw.githubusercontent.com/otwin-core/otwin/main/assets/brand/logo-2400.png" width="50%" alt="Otwin">
 
-[![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-brightgreen?style=flat-square)](https://opensource.org/licenses/apache)
-[![Python](https://img.shields.io/badge/python-3.10%2B-blue?style=flat-square)](https://www.python.org/downloads/)
-[![Stars](https://img.shields.io/github/stars/otwin-core/otwin-hybrid?style=flat-square&label=Stars)](https://github.com/otwin-core/otwin-hybrid/stargazers)
-[![Forks](https://img.shields.io/github/forks/otwin-core/otwin-hybrid?style=flat-square&label=Forks)](https://github.com/otwin-core/otwin-hybrid/forks)
+<br><br>
 
-[![CI](https://img.shields.io/github/actions/workflow/status/otwin-core/otwin-hybrid/ci.yml?style=flat-square&label=CI)](https://github.com/otwin-core/otwin-hybrid/actions)
-[![OpenSSF Scorecard](https://img.shields.io/ossf-scorecard/github.com/otwin-core/otwin-hybrid?style=flat-square&label=OpenSSF%20Scorecard)](https://scorecard.dev/viewer/?uri=github.com/otwin-core/otwin-hybrid)
-[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/13420/badge)](https://www.bestpractices.dev/projects/13420)
+**A hybrid digital twin for a Li-ion battery: predict when it reaches end of life.**
 
+The tutorial behind the [otwin](https://github.com/otwin-core/otwin) library — `pip install otwin`
 
 <br>
 
-
-<br>
-<br
-
-  ####  	:wave: NEWS: Now there is a python library you can use to reproduce this experiment and much more   
-
-<br>
-
-:rocket: Repo: https://github.com/otwin-core/otwin
-
-`pip install otwin`
-
-[![PyPI](https://img.shields.io/pypi/v/otwin?color=1a4fd6&cacheSeconds=3600)](https://pypi.org/project/otwin/)
-
-<br>
-<br>
+[![Tests](https://img.shields.io/github/actions/workflow/status/otwin-core/otwin-hybrid/ci.yml?style=flat-square&logo=githubactions&logoColor=white&label=tests&labelColor=1d1d1f)](https://github.com/otwin-core/otwin-hybrid/actions/workflows/ci.yml)
+[![GitHub stars](https://img.shields.io/github/stars/otwin-core/otwin-hybrid?style=flat-square&logo=github&logoColor=white&label=stars&labelColor=1d1d1f&color=7a2ffc)](https://github.com/otwin-core/otwin-hybrid/stargazers)
+[![OpenSSF Scorecard](https://img.shields.io/ossf-scorecard/github.com/otwin-core/otwin-hybrid?style=flat-square&label=OpenSSF%20Scorecard&labelColor=1d1d1f&color=7a2ffc)](https://scorecard.dev/viewer/?uri=github.com/otwin-core/otwin-hybrid)
+[![OpenSSF Best Practices](https://img.shields.io/cii/level/13420?style=flat-square&label=OpenSSF%20Best%20Practices&labelColor=1d1d1f&color=7a2ffc)](https://www.bestpractices.dev/projects/13420)
+[![License](https://img.shields.io/badge/license-Apache--2.0-7a2ffc?style=flat-square&logo=apache&logoColor=white&labelColor=1d1d1f)](https://github.com/otwin-core/otwin-hybrid/blob/main/LICENSE)
 
 </div>
 
 
 
-This is where the [Otwin](https://github.com/otwin-core) project started — a [Towards Data Science post](https://towardsdatascience.com/how-to-build-a-digital-twin-b31058fd5d3e/) in 2021 about building a digital twin of a battery. It has been rebuilt: better model, honest evaluation, and the same worked example in **three languages**, each opening in one click.
+This is where the [Otwin](https://github.com/otwin-core) project started — a [Towards Data Science post](https://towardsdatascience.com/how-to-build-a-digital-twin-b31058fd5d3e/) in 2021 about building a digital twin of a battery. It has been rebuilt: better model, a stricter evaluation, and the same worked example in **three languages**, each opening in one click.
 
 **It is a tutorial.** The engineered tools that grew out of it are [a separate ecosystem](#where-this-goes-next), and this repository points at them rather than pretending to be them.
 
@@ -86,7 +71,7 @@ $$\log(1 - \mathrm{SoH}) = \log c + z \log n$$
 
 This is not a detail. Fitting the raw curve over a short window is badly conditioned — capacity drops ~11 % while cycle-to-cycle noise is ~0.7 %, so $c$ and $z$ trade off almost freely and least squares wanders to whatever bound you set. Done that way these cells gave $z = 2.0$, sitting on the bound: not a physical reading, an optimiser lost in a flat valley.
 
-**And two of the four cells still sit on the bound after the fix.** B0005 and B0007 both return $z = 1.500$, which is the ceiling. That is stated here rather than buried, because it is the honest reading: over this window the data wants a steeper-than-linear fade — the knee — and the ceiling is a *physical prior* doing real work rather than a fitting artefact that has been tidied away.
+**And two of the four cells still sit on the bound after the fix.** B0005 and B0007 both return $z = 1.500$, which is the ceiling. That is stated here rather than buried, because that is what the fit is saying: over this window the data wants a steeper-than-linear fade — the knee — and the ceiling is a *physical prior* doing real work rather than a fitting artefact that has been tidied away.
 
 The prior is worth what it costs. Measured on the held-out future:
 
@@ -112,7 +97,7 @@ The version plotted above uses `ConstantKernel * RBF + WhiteKernel`. It scores a
 
 A GP with a trend term is **three times better** than the one in the figure, and beats persistence comfortably. The linear-kernel GP lands on 0.0490 — *exactly* the linear-drift baseline, which is what a GP with a linear kernel is.
 
-So the honest claim is narrow: **a stationary-kernel GP cannot extrapolate a trend.** Not "data-driven models fail here". The physics still wins the end-of-life metric that matters, and that argument does not need a weakened opponent.
+So the defensible claim is narrow: **a stationary-kernel GP cannot extrapolate a trend.** Not "data-driven models fail here". The physics still wins the end-of-life metric that matters, and that argument does not need a weakened opponent.
 
 Two more things worth knowing about the plotted configuration, since the earlier version of this README oversold both: `n_restarts_optimizer=5` changes nothing (setting it to 0 gives bit-identical output), and the "generous" length scale of 40 never survives — the optimiser drives it down to 8–12 on every cell.
 
@@ -121,7 +106,7 @@ Two more things worth knowing about the plotted configuration, since the earlier
 **The network never sees SoH.** It sees the *residual* — what the physics got wrong:
 
 <div align="center">
-<img src="figures/05_residuals.png" alt="The residual left by the physics is small and bounded; the network learns only that" width="100%">
+<img src="figures/05_residuals.png" alt="The residual left by the physics over the training window; the network learns only that" width="100%">
 </div>
 
 The residual over the training window is small and roughly zero-mean, which is why fitting it is safer than fitting SoH directly.
@@ -213,7 +198,7 @@ The straight line has the second-best RMSE and the worst answer to the actual qu
 - **The hybrid wins 2 of 4 cells, not 3.** Per-cell RMSE: on B0005 the physics wins (0.0348 vs 0.0512); on B0018 linear drift wins (0.0256 vs 0.0332). Four cells is four cells.
 - **B0006** already crosses 80 % *during* the training window, so its end-of-life is not a prediction at all. It is excluded from that comparison rather than counted as a free win — which is what happens if you are not careful, and it makes every model look perfect.
 - **The advantage is horizon-dependent.** Skill degrades the further out you
-  forecast, and the figure below is the honest version of that — every model
+  forecast, and the figure below shows the whole of it — every model
   gets worse, and the ordering is not stable across the horizon.
 
 <div align="center">
@@ -227,9 +212,11 @@ The straight line has the second-best RMSE and the worst answer to the actual qu
 
 ## Run it
 
-Run the notebook directly with Google Colab: 
+Open a notebook directly in Google Colab, in the language you prefer:
 
-[![Open in Colab — Python](https://img.shields.io/badge/Colab-Python-F9AB00?style=flat-square&logo=googlecolab&logoColor=white)](https://colab.research.google.com/github/otwin-core/otwin-hybrid/blob/main/notebooks/hybrid_digital_twin_python.ipynb)
+[![Colab — Python](https://img.shields.io/badge/Colab-Python-7a2ffc?style=flat-square&logo=googlecolab&logoColor=white&labelColor=1d1d1f)](https://colab.research.google.com/github/otwin-core/otwin-hybrid/blob/main/notebooks/hybrid_digital_twin_python.ipynb)
+[![Colab — Julia](https://img.shields.io/badge/Colab-Julia-7a2ffc?style=flat-square&logo=googlecolab&logoColor=white&labelColor=1d1d1f)](https://colab.research.google.com/github/otwin-core/otwin-hybrid/blob/main/notebooks/hybrid_digital_twin_julia.ipynb)
+[![Colab — R](https://img.shields.io/badge/Colab-R-7a2ffc?style=flat-square&logo=googlecolab&logoColor=white&labelColor=1d1d1f)](https://colab.research.google.com/github/otwin-core/otwin-hybrid/blob/main/notebooks/hybrid_digital_twin_r.ipynb)
 
 or locally:
 
@@ -244,6 +231,18 @@ python -m otwin_hybrid.figures       # regenerates every figure
 Every number in this README comes from those two commands with `SEED = 0`. If a figure disagrees with the text, the text is the bug.
 
 
+
+## Where this goes next
+
+The engineered version of everything shown here is the [otwin](https://github.com/otwin-core/otwin) library: the same physics-plus-residual idea, with calibrated bands whose coverage is measured on data the model never saw, and an audit of what the model promised against what the machine did.
+
+```bash
+pip install otwin
+```
+
+[![PyPI](https://img.shields.io/pypi/v/otwin?style=flat-square&logo=pypi&logoColor=white&label=PyPI&labelColor=1d1d1f&color=7a2ffc)](https://pypi.org/project/otwin/)
+
+And [otwin-home](https://github.com/otwin-core/otwin-home) is the same engine pointed at a house, running entirely in the browser.
 
 ## Data
 

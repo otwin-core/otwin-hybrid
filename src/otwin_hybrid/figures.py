@@ -24,16 +24,30 @@ RES = results_dir()
 FIG = figures_dir()
 FIG.mkdir(parents=True, exist_ok=True)
 
-sns.set_theme(style="whitegrid", context="talk", font_scale=0.85)
+sns.set_theme(
+    style="whitegrid",
+    context="talk",
+    font_scale=0.85,
+    rc={
+        "font.family": "sans-serif",
+        "font.sans-serif": ["Helvetica", "Helvetica Neue", "Arial", "DejaVu Sans"],
+        "grid.color": "#ececf0",
+        "axes.edgecolor": "#d2d2d7",
+        "text.color": "#1d1d1f",
+        "axes.labelcolor": "#1d1d1f",
+        "xtick.color": "#6e6e73",
+        "ytick.color": "#6e6e73",
+    },
+)
 
-INK = "#1B2430"
+INK = "#1d1d1f"
 COLOURS = {
     "soh_true": INK,
-    "physics": "#1C4E73",  # blue   — first principles
-    "gp": "#B5651D",  # orange — data only
-    "hybrid": "#2E7D32",  # green  — physics + learned residual
-    "persistence": "#9AA5B1",
-    "drift": "#C0C4CC",
+    "physics": "#3d7c00",  # deep green — first principles
+    "gp": "#b45309",  # amber — data only
+    "hybrid": "#7a2ffc",  # violet — physics + learned residual
+    "persistence": "#a7a7ad",
+    "drift": "#c9c9ce",
 }
 LABELS = {
     "physics": "Physics only (Wang power law)",
@@ -74,7 +88,7 @@ def fig_hero(curves: pd.DataFrame, cell: str = "B0005") -> None:
     )
 
     # ---------------- main panel ----------------
-    ax.axvspan(g.cycle.min(), split, color="#EEF2F6", zorder=0)
+    ax.axvspan(g.cycle.min(), split, color="#f5f5f7", zorder=0)
     ax.scatter(
         g.cycle,
         g.soh_true,
@@ -97,15 +111,15 @@ def fig_hero(curves: pd.DataFrame, cell: str = "B0005") -> None:
         zorder=2,
     )
 
-    ax.axhline(EOL, color="#B00020", lw=1.4, ls="--", zorder=1)
-    ax.text(cmax - 2, EOL + 0.012, "end of life (80 %)", color="#B00020", fontsize=11, ha="right")
-    ax.axvline(split, color="#66707A", lw=1.2, zorder=1)
+    ax.axhline(EOL, color="#b8102e", lw=1.4, ls="--", zorder=1)
+    ax.text(cmax - 2, EOL + 0.012, "end of life (80 %)", color="#b8102e", fontsize=11, ha="right")
+    ax.axvline(split, color="#6e6e73", lw=1.2, zorder=1)
 
     ax.annotate(
         "",
         xy=(g.cycle.min(), 1.048),
         xytext=(split, 1.048),
-        arrowprops=dict(arrowstyle="<->", color="#66707A", lw=1.1),
+        arrowprops=dict(arrowstyle="<->", color="#6e6e73", lw=1.1),
     )
     ax.text(
         split / 2,
@@ -114,13 +128,13 @@ def fig_hero(curves: pd.DataFrame, cell: str = "B0005") -> None:
         ha="center",
         va="bottom",
         fontsize=10.5,
-        color="#66707A",
+        color="#6e6e73",
     )
     ax.annotate(
         "",
         xy=(split, 1.048),
         xytext=(cmax, 1.048),
-        arrowprops=dict(arrowstyle="<->", color="#66707A", lw=1.1),
+        arrowprops=dict(arrowstyle="<->", color="#6e6e73", lw=1.1),
     )
     ax.text(
         (split + cmax) / 2,
@@ -129,7 +143,7 @@ def fig_hero(curves: pd.DataFrame, cell: str = "B0005") -> None:
         ha="center",
         va="bottom",
         fontsize=10.5,
-        color="#66707A",
+        color="#6e6e73",
     )
 
     ax.set_xlabel("Discharge cycle")
@@ -147,18 +161,18 @@ def fig_hero(curves: pd.DataFrame, cell: str = "B0005") -> None:
     axz.plot(
         zg.cycle, zg["persistence"], lw=1.6, ls=(0, (4, 3)), color=COLOURS["persistence"], zorder=2
     )
-    axz.axhline(EOL, color="#B00020", lw=1.3, ls="--", zorder=1)
+    axz.axhline(EOL, color="#b8102e", lw=1.3, ls="--", zorder=1)
 
     lo = min(zg.soh_true.min(), zg[["physics", "hybrid"]].min().min()) - 0.025
     hi = max(zg.soh_true.max(), zg[["gp", "persistence"]].max().max()) + 0.025
     axz.set_xlim(z0, cmax)
     axz.set_ylim(lo, hi)
     axz.set_xlabel("Discharge cycle")
-    axz.set_title("the last third, up close", loc="left", fontsize=12.5, color="#66707A")
+    axz.set_title("the last third, up close", loc="left", fontsize=12.5, color="#6e6e73")
 
     # mark the zoom region on the main panel
     ax.add_patch(
-        Rectangle((z0, lo), cmax - z0, hi - lo, fill=False, ec="#66707A", lw=1.2, ls=":", zorder=5)
+        Rectangle((z0, lo), cmax - z0, hi - lo, fill=False, ec="#6e6e73", lw=1.2, ls=":", zorder=5)
     )
 
     fig.suptitle(
@@ -179,12 +193,12 @@ def fig_all_cells(curves: pd.DataFrame) -> None:
     for ax, cell in zip(axes.ravel(), cells, strict=False):
         g = curves[curves.battery == cell]
         split = g.loc[g.split, "cycle"].max()
-        ax.axvspan(g.cycle.min(), split, color="#EEF2F6", zorder=0)
+        ax.axvspan(g.cycle.min(), split, color="#f5f5f7", zorder=0)
         ax.scatter(g.cycle, g.soh_true, s=11, color=INK, alpha=0.5, zorder=3, linewidths=0)
         for m in ("physics", "gp", "hybrid"):
             ax.plot(g.cycle, g[m], lw=2.1, color=COLOURS[m], zorder=4)
-        ax.axhline(EOL, color="#B00020", lw=1.1, ls="--", zorder=1)
-        ax.axvline(split, color="#66707A", lw=1.0, zorder=1)
+        ax.axhline(EOL, color="#b8102e", lw=1.1, ls="--", zorder=1)
+        ax.axvline(split, color="#6e6e73", lw=1.0, zorder=1)
         ax.set_title(cell, loc="left", fontsize=13)
         ax.set_ylim(0.5, 1.03)
     for ax in axes[1]:
@@ -235,8 +249,8 @@ def fig_accuracy(metrics: pd.DataFrame) -> None:
         alpha=0.9,
         height=0.62,
     )
-    ax1.axvline(1.0, color="#B00020", lw=1.6, ls="--")
-    ax1.text(1.02, -0.62, "persistence baseline", color="#B00020", fontsize=10.5)
+    ax1.axvline(1.0, color="#b8102e", lw=1.6, ls="--")
+    ax1.text(1.02, -0.62, "persistence baseline", color="#b8102e", fontsize=10.5)
     for bar, v in zip(bars, means.values, strict=True):
         ax1.text(
             v + 0.03,
@@ -255,15 +269,15 @@ def fig_accuracy(metrics: pd.DataFrame) -> None:
         y="label",
         x="skill",
         hue="label",
-        order=[LABELS[m].split(" (")[0] for m in order],
-        palette=[COLOURS[m] for m in order],
+        order=[LABELS[m].split(" (")[0] for m in reversed(order)],
+        palette={LABELS[m].split(" (")[0]: COLOURS[m] for m in order},
         s=11,
         ax=ax2,
         legend=False,
         alpha=0.85,
         jitter=0.12,
     )
-    ax2.axvline(1.0, color="#B00020", lw=1.6, ls="--")
+    ax2.axvline(1.0, color="#b8102e", lw=1.6, ls="--")
     ax2.set_ylabel("")
     ax2.set_yticklabels([])
     ax2.set_xlabel("Skill score, per cell")
@@ -294,10 +308,10 @@ def fig_eol(metrics: pd.DataFrame) -> None:
 
     x = np.arange(len(order))
     ax1.bar(
-        x - 0.2, rm.values / rm.max(), 0.38, label="Forecast RMSE (normalised)", color="#9AA5B1"
+        x - 0.2, rm.values / rm.max(), 0.38, label="Forecast RMSE (normalised)", color="#a7a7ad"
     )
     ax1.bar(
-        x + 0.2, ee.values / ee.max(), 0.38, label="End-of-life error (normalised)", color="#B5651D"
+        x + 0.2, ee.values / ee.max(), 0.38, label="End-of-life error (normalised)", color="#7a2ffc"
     )
     ax1.set_xticks(x)
     ax1.set_xticklabels([LABELS[m].split(" (")[0] for m in order], fontsize=11)
@@ -320,9 +334,9 @@ def fig_eol(metrics: pd.DataFrame) -> None:
     hi = max(d.eol_true.max(), d.eol_pred.max()) + 12
     ax2.plot([lo, hi], [lo, hi], color=INK, lw=1.2, ls="--", zorder=1)
     ax2.fill_between(
-        [lo, hi], [lo - 20, hi - 20], [lo + 20, hi + 20], color="#2E7D32", alpha=0.07, zorder=0
+        [lo, hi], [lo - 20, hi - 20], [lo + 20, hi + 20], color="#3d7c00", alpha=0.07, zorder=0
     )
-    ax2.text(hi - 4, lo + 8, "±20 cycles", color="#2E7D32", fontsize=10.5, ha="right")
+    ax2.text(hi - 4, lo + 8, "±20 cycles", color="#3d7c00", fontsize=10.5, ha="right")
     ax2.set_xlim(lo, hi)
     ax2.set_ylim(lo, hi)
     ax2.set_xlabel("Actual end-of-life cycle")
@@ -349,7 +363,7 @@ def fig_residuals(curves: pd.DataFrame, cell: str = "B0005") -> None:
 
     fig, axes = plt.subplots(1, 3, figsize=(15, 4.8))
 
-    axes[0].axvspan(g.cycle.min(), split, color="#EEF2F6", zorder=0)
+    axes[0].axvspan(g.cycle.min(), split, color="#f5f5f7", zorder=0)
     axes[0].axhline(0, color=INK, lw=1.1)
     axes[0].scatter(
         g.cycle,
@@ -372,7 +386,7 @@ def fig_residuals(curves: pd.DataFrame, cell: str = "B0005") -> None:
     axes[0].legend(frameon=False, fontsize=10)
     axes[0].set_title("The network only sees this", loc="left", fontsize=12.5)
 
-    axes[1].axvspan(g.cycle.min(), split, color="#EEF2F6", zorder=0)
+    axes[1].axvspan(g.cycle.min(), split, color="#f5f5f7", zorder=0)
     axes[1].axhline(0, color=INK, lw=1.1)
     axes[1].scatter(g.cycle, res_hyb, s=16, color=COLOURS["hybrid"], alpha=0.75, linewidths=0)
     axes[1].set_xlabel("Discharge cycle")
@@ -404,8 +418,7 @@ def fig_residuals(curves: pd.DataFrame, cell: str = "B0005") -> None:
     axes[2].set_title("Residual distribution", loc="left", fontsize=12.5)
 
     fig.suptitle(
-        f"Cell {cell} — the residual is small and bounded, which is why the "
-        "hybrid cannot run away",
+        f"Cell {cell} — the network sees only the residual the physics leaves behind",
         x=0.02,
         ha="left",
         fontsize=14.5,
